@@ -384,7 +384,7 @@ public class RequestFragment extends Fragment implements View.OnClickListener {
 
         private MaterialDialog dialog;
         private String apiKey = getResources().getString(R.string.arctic_manager_api_key);
-        private boolean isArctic = apiKey.length() > 0;
+        private boolean isArctic = (apiKey.length() > 0) && !(Preferences.get(getActivity()).isPremiumRequest());
         private String errorMessage;
 
         @Override
