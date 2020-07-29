@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Leave empty if you don't want to show changelog date -->
-    <string name="changelog_date">April 16, 2020</string>
+    <string name="changelog_date">July 24, 2020</string>
 
     <!-- Changelog support html formatting
     * <b> for Bold
@@ -10,11 +10,7 @@
     * <u> for Underline
     * <a href="linkUrl">Link Text</a> for links -->
     <string-array name="changelog">
-        <item>Updated Gradle Plugin.</item>
-        <item>Option to hide missing app count.</item>
-        <item>Fixed new wallpaper count badge.</item>
-        <item>Updated translations.</item>
-        <item>Added new translations.</item>
+        <item>Fix icon name generation</item>
     </string-array>
 
 </resources>

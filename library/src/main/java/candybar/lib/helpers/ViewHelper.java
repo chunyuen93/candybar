@@ -7,12 +7,9 @@ import android.os.Build;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.danimahardhika.android.helpers.core.ColorHelper;
 import com.danimahardhika.android.helpers.core.WindowHelper;
-import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 import java.util.Locale;
 
@@ -72,25 +69,8 @@ public class ViewHelper {
             right -= navBar;
 
         params.setMargins(left, top, (right + rightNavBar), (bottom + bottomNavBar));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            params.setMarginEnd((right + rightNavBar));
-        }
+        params.setMarginEnd((right + rightNavBar));
         view.setLayoutParams(params);
-    }
-
-    public static void setFastScrollColor(@Nullable RecyclerFastScroller fastScroll) {
-        if (fastScroll == null) return;
-
-        Context context = fastScroll.getContext();
-        if (context instanceof ContextThemeWrapper) {
-            context = ((ContextThemeWrapper) context).getBaseContext();
-        }
-
-        int accent = ColorHelper.getAttributeColor(context, R.attr.colorAccent);
-
-        fastScroll.setBarColor(ColorHelper.setColorAlpha(accent, 0.8f));
-        fastScroll.setHandleNormalColor(accent);
-        fastScroll.setHandlePressedColor(ColorHelper.getDarkerColor(accent, 0.7f));
     }
 
     public static Point getWallpaperViewRatio(String viewStyle) {

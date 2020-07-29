@@ -1,5 +1,6 @@
 package candybar.lib.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
@@ -23,14 +24,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.danimahardhika.android.helpers.animation.AnimationHelper;
 import com.danimahardhika.android.helpers.core.ColorHelper;
 import com.danimahardhika.android.helpers.core.DrawableHelper;
 import com.danimahardhika.android.helpers.core.ListHelper;
 import com.danimahardhika.android.helpers.core.ViewHelper;
 import com.danimahardhika.android.helpers.core.utils.LogUtil;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 import com.rafakob.drawme.DrawMeButton;
 
 import java.io.InputStream;
@@ -48,8 +48,7 @@ import candybar.lib.helpers.TapIntroHelper;
 import candybar.lib.items.Wallpaper;
 import candybar.lib.preferences.Preferences;
 import candybar.lib.utils.listeners.WallpapersListener;
-
-import static candybar.lib.helpers.ViewHelper.setFastScrollColor;
+import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
 /*
  * CandyBar - Material Dashboard
@@ -74,7 +73,6 @@ public class WallpapersFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipe;
     private ProgressBar mProgress;
-    private RecyclerFastScroller mFastScroll;
     private DrawMeButton mPopupBubble;
 
     private AsyncTask mAsyncTask;
@@ -87,7 +85,6 @@ public class WallpapersFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.wallpapers_grid);
         mSwipe = view.findViewById(R.id.swipe);
         mProgress = view.findViewById(R.id.progress);
-        mFastScroll = view.findViewById(R.id.fastscroll);
         mPopupBubble = view.findViewById(R.id.popup_bubble);
 
         if (!Preferences.get(getActivity()).isToolbarShadowEnabled()) {
@@ -114,13 +111,7 @@ public class WallpapersFragment extends Fragment {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),
                 getActivity().getResources().getInteger(R.integer.wallpapers_column_count)));
 
-        if (CandyBarApplication.getConfiguration().getWallpapersGrid() == CandyBarApplication.GridStyle.FLAT) {
-            int padding = getActivity().getResources().getDimensionPixelSize(R.dimen.card_margin);
-            mRecyclerView.setPadding(padding, padding, 0, 0);
-        }
-
-        setFastScrollColor(mFastScroll);
-        mFastScroll.attachRecyclerView(mRecyclerView);
+        new FastScrollerBuilder(mRecyclerView).useMd2Style().build();
 
         mSwipe.setOnRefreshListener(() -> {
             if (mProgress.getVisibility() == View.GONE)
@@ -141,7 +132,8 @@ public class WallpapersFragment extends Fragment {
     @Override
     public void onDestroy() {
         if (mAsyncTask != null) mAsyncTask.cancel(true);
-        ImageLoader.getInstance().getMemoryCache().clear();
+        Activity activity = getActivity();
+        if (activity != null) Glide.get(activity).clearMemory();
         super.onDestroy();
     }
 

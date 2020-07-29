@@ -28,6 +28,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,6 +81,18 @@ public class RequestHelper {
                 new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss", Locale.getDefault())) + ".zip";
     }
 
+    public static String fixNameForRequest(String name) {
+        String normalized = name.toLowerCase();
+        normalized = Normalizer
+                .normalize(normalized, Normalizer.Form.NFD)
+                .replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "")
+                .replaceAll("[.\"']", "")
+                .replaceAll("[ \\[\\]{}()=!/\\\\&,?°|<>;:#~+*-]", "_");
+        if (Character.isDigit(normalized.charAt(0))) normalized = "_" + normalized;
+        normalized = normalized.replaceAll("_+", "_");
+        return normalized;
+    }
+
     @Nullable
     public static File buildXml(@NonNull Context context, @NonNull List<Request> requests, @NonNull XmlType xmlType) {
         try {
@@ -92,7 +106,7 @@ public class RequestHelper {
 
             File file = new File(context.getCacheDir().toString(), xmlType.getFileName());
             Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file), "UTF8"));
+                    new FileOutputStream(file), StandardCharsets.UTF_8));
             writer.append(xmlType.getHeader()).append("\n\n");
 
             for (Request request : requests) {
@@ -119,7 +133,7 @@ public class RequestHelper {
                     request.getName(),
                     request.getPackageName(),
                     request.getActivity(),
-                    request.getName().toLowerCase().replace(" ", "_")));
+                    fixNameForRequest(request.getName())));
             isFirst = false;
         }
         sb.append("]}");
@@ -380,7 +394,7 @@ public class RequestHelper {
             return;
         }
 
-        //Lucky Patcher and Freedom package name
+        // Lucky Patcher and Freedom package name
         String[] strings = new String[]{
                 "com.chelpus.lackypatch",
                 "com.dimonvideo.luckypatcher",
@@ -448,7 +462,7 @@ public class RequestHelper {
                             "\n" +
                             "\t" + context.getString(R.string.appfilter_item)
                             .replace("{{component}}", request.getActivity())
-                            .replace("{{drawable}}", request.getName().toLowerCase().replace(" ", "_")) +
+                            .replace("{{drawable}}", fixNameForRequest(request.getName())) +
                             "\n\n";
                 case APPMAP:
                     String packageName = "" + request.getPackageName() + "/";
@@ -456,14 +470,14 @@ public class RequestHelper {
                     return "\t<!-- " + request.getName() + " -->" +
                             "\n" +
                             "\t<item class=\"" + className + "\" name=\"" +
-                            request.getName().toLowerCase().replace(" ", "_") +
+                            fixNameForRequest(request.getName()) +
                             "\"/>" +
                             "\n\n";
                 case THEME_RESOURCES:
                     return "\t<!-- " + request.getName() + " -->" +
                             "\n" +
                             "\t<AppIcon name=\"" + request.getActivity() + "\" image=\"" +
-                            request.getName().toLowerCase().replace(" ", "_") +
+                            fixNameForRequest(request.getName()) +
                             "\"/>" +
                             "\n\n";
                 default:

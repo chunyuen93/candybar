@@ -1,3 +1,22 @@
+# v3.7.2
+- Fix icon name generation
+
+# v3.7.0
+- Added Czech language
+- Updated translations
+- Updated Gradle
+- Improved Adaptive Icon support
+- Bumped minSdk to 21. Now the minimum supported Android version is 5.0 (Lollipop)
+- Minor design refreshment
+- Migrated to Glide
+- Improved fast scrollbar for icons section
+- Removed UIL completely
+- Now properly fixes icon name in Icon Requests
+- Redesigned Apply section
+- Redesigned Wallpaper section
+- Added Niagara and Square launcher
+- Fixed Microsoft launcher apply behaviour
+
 # v3.6.3
 - Updated Gradle Plugin.
 - Option to hide missing app count.

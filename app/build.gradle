@@ -23,7 +23,6 @@ android {
     }
 
     compileSdkVersion rootProject.ext.CompileSdk
-    buildToolsVersion rootProject.ext.BuildTools
 
     android.applicationVariants.all { variant ->
         variant.outputs.all { output ->
@@ -35,8 +34,8 @@ android {
         applicationId "com.candybar.dev"
         minSdkVersion rootProject.ext.MinSdk
         targetSdkVersion rootProject.ext.TargetSdk
-        versionCode 363
-        versionName "3.6.3"
+        versionCode rootProject.ext.VersionCode
+        versionName rootProject.ext.VersionName
         multiDexEnabled true
 
         // Remove '/*' and '*/' below to enable OneSignal
@@ -62,7 +61,6 @@ android {
 }
 
 dependencies {
-
     implementation project (':library')
 
     // Remove '//' below to Enable OneSignal

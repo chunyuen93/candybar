@@ -1,6 +1,7 @@
 package candybar.lib.fragments;
 
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,10 +24,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.danimahardhika.android.helpers.animation.AnimationHelper;
 import com.danimahardhika.android.helpers.core.utils.LogUtil;
 import com.google.android.material.tabs.TabLayout;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.List;
 import candybar.lib.R;
 import candybar.lib.activities.CandyBarMainActivity;
 import candybar.lib.applications.CandyBarApplication;
-import candybar.lib.fragments.dialog.IconShapeFragment;
+import candybar.lib.fragments.dialog.IconShapeChooserFragment;
 import candybar.lib.helpers.IconsHelper;
 import candybar.lib.helpers.TapIntroHelper;
 import candybar.lib.items.Icon;
@@ -87,12 +88,10 @@ public class IconsBaseFragment extends Fragment {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
         return view;
@@ -157,7 +156,24 @@ public class IconsBaseFragment extends Fragment {
         }
 
         iconShape.setOnMenuItemClickListener(menuItem -> {
-            IconShapeFragment.showIconShapeChooser(getActivity().getSupportFragmentManager());
+            IconShapeChooserFragment.showIconShapeChooser(getActivity().getSupportFragmentManager());
+            /*List<IconShape> shapes = IconShapeHelper.getShapes();
+            List<String> iconShapes = new ArrayList<>();
+            int currentShape = Preferences.get(getActivity()).getIconShape();
+            int currentShapeIndex = 0;
+            for (int i = 0; i < shapes.size(); i++) {
+                iconShapes.add(shapes.get(i).getName());
+                if (shapes.get(i).getShape() == currentShape) currentShapeIndex = i;
+            }
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.icon_shape)
+                    .items(iconShapes)
+                    .itemsCallbackSingleChoice(currentShapeIndex, (dialog, itemView, which, text) -> {
+                        return true;
+                    })
+                    .positiveText(R.string.close)
+                    .show();*/
+
             return false;
         });
     }
@@ -167,7 +183,8 @@ public class IconsBaseFragment extends Fragment {
         if (mGetIcons != null) {
             mGetIcons.cancel(true);
         }
-        ImageLoader.getInstance().getMemoryCache().clear();
+        Activity activity = getActivity();
+        if (activity != null) Glide.get(activity).clearMemory();
         super.onDestroy();
     }
 

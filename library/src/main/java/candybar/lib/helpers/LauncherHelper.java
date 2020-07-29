@@ -69,6 +69,8 @@ public class LauncherHelper {
     private static final int MICROSOFT = 29;
     private static final int FLICK = 30;
     private static final int BLACKBERRY = 31;
+    private static final int SQUARE = 32;
+    private static final int NIAGARA = 33;
 
     private static int getLauncherId(String packageName) {
         if (packageName == null) return UNKNOWN;
@@ -105,6 +107,8 @@ public class LauncherHelper {
                 return LUCID;
             case "com.jiubang.go.mini.launcher":
                 return MINI;
+            case "bitpit.launcher":
+                return NIAGARA;
             case "com.gtp.nextlauncher":
             case "com.gtp.nextlauncher.trial":
                 return NEXT;
@@ -119,6 +123,8 @@ public class LauncherHelper {
                 return SMART;
             case "home.solo.launcher.free":
                 return SOLO;
+            case "com.ss.squarehome2":
+                return SQUARE;
             case "com.asus.launcher":
                 return ZENUI;
             case "me.craftsapp.nlauncher":
@@ -154,6 +160,26 @@ public class LauncherHelper {
 
     private static void applyLauncher(@NonNull Context context, String launcherPackage, String launcherName, int id) {
         switch (id) {
+            case ABC:
+                try {
+                    /*
+                     * Just want to let anyone who is going to copy
+                     * It's not easy searching for this
+                     * I will be grateful if you take this with a proper credit
+                     * Thank you
+                     */
+                    final Intent abc = context.getPackageManager().getLaunchIntentForPackage(
+                            "com.abclauncher.launcher");
+                    final Intent abc1 = new Intent("com.abclauncher.launcher.themes.themeaction");
+                    abc1.putExtra("theme_package_name", context.getPackageName());
+                    abc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.sendBroadcast(abc1);
+                    context.startActivity(abc);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
             case ACTION:
                 try {
                     final Intent action = context.getPackageManager().getLaunchIntentForPackage(
@@ -210,6 +236,9 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
+            case BLACKBERRY:
+                applyManual(context, launcherPackage, launcherName, "com.blackberry.blackberrylauncher.MainActivity");
+                break;
             case CMTHEME:
                 try {
                     final Intent cmtheme = new Intent("android.intent.action.MAIN");
@@ -223,6 +252,20 @@ public class LauncherHelper {
                 } catch (SecurityException | IllegalArgumentException e) {
                     Toast.makeText(context, R.string.apply_cmtheme_failed,
                             Toast.LENGTH_LONG).show();
+                }
+                break;
+            case EVIE:
+                applyEvie(context, launcherPackage, launcherName);
+                break;
+            case FLICK:
+                try {
+                    final Intent flickAction = new Intent("com.universallauncher.universallauncher.FLICK_ICON_PACK_APPLIER");
+                    flickAction.putExtra("com.universallauncher.universallauncher.ICON_THEME_PACKAGE", context.getPackageName());
+                    flickAction.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(flickAction);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
             case GO:
@@ -241,8 +284,6 @@ public class LauncherHelper {
                 }
                 break;
             case HOLO:
-                applyManual(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
-                break;
             case HOLOHD:
                 applyManual(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
                 break;
@@ -270,9 +311,21 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
+            case MICROSOFT:
+                applyManual(context, launcherPackage, launcherName, null);
+                break;
             case MINI:
                 applyManual(context, launcherPackage, launcherName,
                         "com.jiubang.go.mini.launcher.setting.MiniLauncherSettingActivity");
+                break;
+            case NIAGARA:
+                try {
+                    final Intent niagara = new Intent("bitpit.launcher.APPLY_ICONS");
+                    niagara.putExtra("packageName", context.getPackageName());
+                    context.startActivity(niagara);
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case NEXT:
                 try {
@@ -307,6 +360,21 @@ public class LauncherHelper {
             case PIXEL:
                 launcherIncompatible(context, launcherName);
                 break;
+            case POCO:
+                applyManual(context, launcherPackage, launcherName, "com.miui.home.settings.HomeSettingsActivity");
+                break;
+            case POSIDON:
+                try {
+                    Intent posidon = new Intent(Intent.ACTION_MAIN);
+                    posidon.setComponent(new ComponentName("posidon.launcher", "posidon.launcher.external.ApplyIcons"));
+                    posidon.putExtra("iconpack", context.getPackageName());
+                    posidon.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(posidon);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
             case SMART:
                 try {
                     final Intent smart = new Intent("ginlemon.smartlauncher.setGSLTHEME");
@@ -334,15 +402,12 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
-            case ZENUI:
+            case SQUARE:
                 try {
-                    final Intent asus = new Intent("com.asus.launcher");
-                    asus.setAction("com.asus.launcher.intent.action.APPLY_ICONPACK");
-                    asus.addCategory(Intent.CATEGORY_DEFAULT);
-                    asus.putExtra("com.asus.launcher.iconpack.PACKAGE_NAME", context.getPackageName());
-                    asus.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(asus);
-                    ((AppCompatActivity) context).finish();
+                    final Intent square = new Intent("com.ss.squarehome2.ACTION_APPLY_ICONPACK");
+                    square.setComponent(ComponentName.unflattenFromString("com.ss.squarehome2/.ApplyThemeActivity"));
+                    square.putExtra("com.ss.squarehome2.EXTRA_ICONPACK", context.getPackageName());
+                    context.startActivity(square);
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
@@ -378,6 +443,19 @@ public class LauncherHelper {
                     m.putExtra("com.uprui.launcher.marshmallow.theme.NAME", context.getPackageName());
                     m.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(m);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+            case ZENUI:
+                try {
+                    final Intent asus = new Intent("com.asus.launcher");
+                    asus.setAction("com.asus.launcher.intent.action.APPLY_ICONPACK");
+                    asus.addCategory(Intent.CATEGORY_DEFAULT);
+                    asus.putExtra("com.asus.launcher.iconpack.PACKAGE_NAME", context.getPackageName());
+                    asus.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(asus);
                     ((AppCompatActivity) context).finish();
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
@@ -425,61 +503,6 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
-            case ABC:
-                try {
-                    /*
-                     * Just want to let anyone who is going to copy
-                     * It's not easy searching for this
-                     * I will be grateful if you take this with a proper credit
-                     * Thank you
-                     */
-                    final Intent abc = context.getPackageManager().getLaunchIntentForPackage(
-                            "com.abclauncher.launcher");
-                    final Intent abc1 = new Intent("com.abclauncher.launcher.themes.themeaction");
-                    abc1.putExtra("theme_package_name", context.getPackageName());
-                    abc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.sendBroadcast(abc1);
-                    context.startActivity(abc);
-                    ((AppCompatActivity) context).finish();
-                } catch (ActivityNotFoundException | NullPointerException e) {
-                    openGooglePlay(context, launcherPackage, launcherName);
-                }
-                break;
-            case EVIE:
-                applyEvie(context, launcherPackage, launcherName);
-                break;
-            case POCO:
-                applyManual(context, launcherPackage, launcherName, "com.miui.home.settings.HomeSettingsActivity");
-                break;
-            case POSIDON:
-                try {
-                    Intent posidon = new Intent(Intent.ACTION_MAIN);
-                    posidon.setComponent(new ComponentName("posidon.launcher", "posidon.launcher.external.ApplyIcons"));
-                    posidon.putExtra("iconpack", context.getPackageName());
-                    posidon.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(posidon);
-                    ((AppCompatActivity) context).finish();
-                } catch (ActivityNotFoundException | NullPointerException e) {
-                    openGooglePlay(context, launcherPackage, launcherName);
-                }
-                break;
-            case MICROSOFT:
-                applyManual(context, launcherPackage, launcherName, "com.microsoft.launcher.Launcher");
-                break;
-            case FLICK:
-                try {
-                    final Intent flickAction = new Intent("com.universallauncher.universallauncher.FLICK_ICON_PACK_APPLIER");
-                    flickAction.putExtra("com.universallauncher.universallauncher.ICON_THEME_PACKAGE", context.getPackageName());
-                    flickAction.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(flickAction);
-                    ((AppCompatActivity) context).finish();
-                } catch (ActivityNotFoundException | NullPointerException e) {
-                    openGooglePlay(context, launcherPackage, launcherName);
-                }
-                break;
-            case BLACKBERRY:
-                applyManual(context, launcherPackage, launcherName, "com.blackberry.blackberrylauncher.MainActivity");
-                break;
         }
     }
 
@@ -495,6 +518,7 @@ public class LauncherHelper {
                             context.getResources().getString(R.string.app_name)))
                     .positiveText(android.R.string.ok)
                     .onPositive((dialog, which) -> {
+                        if (activity == null) return;
                         try {
                             final Intent intent = new Intent(Intent.ACTION_MAIN);
                             intent.setComponent(new ComponentName(launcherPackage,

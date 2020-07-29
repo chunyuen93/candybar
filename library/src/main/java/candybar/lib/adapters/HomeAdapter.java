@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -28,6 +27,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.danimahardhika.android.helpers.core.ColorHelper;
 import com.danimahardhika.android.helpers.core.DrawableHelper;
 import com.danimahardhika.android.helpers.core.utils.LogUtil;
@@ -36,7 +38,6 @@ import com.github.javiersantos.appupdater.enums.AppUpdaterError;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.github.javiersantos.appupdater.objects.Update;
 import com.google.android.material.card.MaterialCardView;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -53,7 +54,6 @@ import candybar.lib.helpers.WallpaperHelper;
 import candybar.lib.items.Home;
 import candybar.lib.preferences.Preferences;
 import candybar.lib.tasks.IconRequestTask;
-import candybar.lib.utils.ImageConfig;
 import candybar.lib.utils.views.HeaderView;
 import me.grantland.widget.AutofitTextView;
 
@@ -186,16 +186,21 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             headerViewHolder.content.setHtml(mContext.getResources().getString(R.string.home_description));
 
             String uri = mContext.getResources().getString(R.string.home_image);
-            if (URLUtil.isValidUrl(uri)) {
-                ImageLoader.getInstance().displayImage(uri,
-                        headerViewHolder.image, ImageConfig.getDefaultImageOptions(true));
-            } else if (ColorHelper.isValidColor(uri)) {
+            if (ColorHelper.isValidColor(uri)) {
                 headerViewHolder.image.setBackgroundColor(Color.parseColor(uri));
             } else {
-                uri = "drawable://" + DrawableHelper.getResourceId(mContext, uri);
+                if (!URLUtil.isValidUrl(uri)) {
+                    uri = "drawable://" + DrawableHelper.getResourceId(mContext, uri);
+                }
 
-                ImageLoader.getInstance().displayImage(uri,
-                        headerViewHolder.image, ImageConfig.getDefaultImageOptions(true));
+                Glide.with(mContext)
+                        .load(uri)
+                        .transition(DrawableTransitionOptions.withCrossFade(300))
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(uri.contains("drawable://")
+                                ? DiskCacheStrategy.NONE
+                                : DiskCacheStrategy.RESOURCE)
+                        .into(headerViewHolder.image);
             }
         } else if (holder.getItemViewType() == TYPE_CONTENT) {
             ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
@@ -326,10 +331,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
                     StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
                     params.setMargins(0, 0, margin, margin);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        params.setMarginEnd(margin);
-                    }
+                    params.setMarginEnd(margin);
                 } else if (card.getLayoutParams() instanceof LinearLayout.LayoutParams) {
                     card.setRadius(0f);
                     card.setUseCompatPadding(false);
@@ -342,9 +344,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 margin, margin);
                     }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        params.setMarginEnd(margin);
-                    }
+                    params.setMarginEnd(margin);
                 }
             }
 
@@ -496,10 +496,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
                     StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
                     params.setMargins(0, 0, margin, margin);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        params.setMarginEnd(margin);
-                    }
+                    params.setMarginEnd(margin);
                 }
             }
 
@@ -583,10 +580,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
                     StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
                     params.setMargins(0, 0, margin, margin);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        params.setMarginEnd(margin);
-                    }
+                    params.setMarginEnd(margin);
                 }
             }
 
@@ -642,10 +636,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
                     StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
                     params.setMargins(0, 0, margin, margin);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        params.setMarginEnd(margin);
-                    }
+                    params.setMarginEnd(margin);
                 }
             }
 
@@ -709,9 +700,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
                     params.setMargins(0, 0, margin, margin);
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        params.setMarginEnd(margin);
-                    }
+                    params.setMarginEnd(margin);
                 }
             }
 

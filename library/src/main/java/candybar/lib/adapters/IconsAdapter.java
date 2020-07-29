@@ -12,12 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.danimahardhika.android.helpers.core.SoftKeyboardHelper;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +25,6 @@ import candybar.lib.R;
 import candybar.lib.helpers.IconsHelper;
 import candybar.lib.helpers.IntentHelper;
 import candybar.lib.items.Icon;
-import candybar.lib.preferences.Preferences;
-import candybar.lib.utils.ImageConfig;
 
 /*
  * CandyBar - Material Dashboard
@@ -53,8 +49,8 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
     private final Context mContext;
     private final List<Icon> mIcons;
     private List<Icon> mIconsAll;
-    private final DisplayImageOptions.Builder mOptions;
     private final Fragment mFragment;
+    private final List<ViewHolder> mViewHolders;
 
     private final boolean mIsShowIconName;
 
@@ -63,16 +59,12 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
         mFragment = fragment;
         mIcons = icons;
         mIsShowIconName = mContext.getResources().getBoolean(R.bool.show_icon_name);
+        mViewHolders = new ArrayList<>();
+
         if (search) {
             mIconsAll = new ArrayList<>();
             mIconsAll.addAll(mIcons);
         }
-
-        mOptions = ImageConfig.getRawDefaultImageOptions();
-        mOptions.resetViewBeforeLoading(true);
-        mOptions.cacheInMemory(true);
-        mOptions.cacheOnDisk(false);
-        mOptions.displayer(new FadeInBitmapDisplayer(700));
     }
 
     @Override
@@ -85,12 +77,30 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.name.setText(mIcons.get(position).getTitle());
+        mViewHolders.add(holder);
+        loadIconInto(holder.icon, position);
+    }
 
-        ImageLoader.setShape(Preferences.get(mContext).getIconShape());
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        mViewHolders.remove(holder);
+        super.onViewRecycled(holder);
+    }
 
-        ImageLoader.getInstance().displayImage("drawable://" + mIcons.get(position).getRes(),
-                new ImageViewAware(holder.icon), mOptions.build(),
-                new ImageSize(272, 272), null, null);
+    private void loadIconInto(ImageView imageView, int position) {
+        Glide.with(mFragment)
+                .load("drawable://" + mIcons.get(position).getRes())
+                .skipMemoryCache(true)
+                .transition(DrawableTransitionOptions.withCrossFade(300))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(imageView);
+    }
+
+    public void reloadIcons() {
+        Glide.get(mContext).clearMemory();
+        for (ViewHolder holder : mViewHolders) {
+            loadIconInto(holder.icon, holder.getAdapterPosition());
+        }
     }
 
     @Override
@@ -99,7 +109,6 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
         private final ImageView icon;
         private final TextView name;
         private final LinearLayout container;

@@ -120,8 +120,55 @@
     <item drawable="actiondash" />
     <item drawable="actions_service" />
 
+    <item
+        drawable="action_launcher"
+        name="Rope" />
+    <item
+        drawable="actiondash"
+        name="Rope" />
+    <item
+        drawable="actions_service"
+        name="Rope" />
+    <item
+        drawable="accubattery"
+        name="Rope" />
+    <item
+        drawable="accuweather"
+        name="Rope" />
+    <item
+        drawable="acorns"
+        name="Rope" />
+    <item
+        drawable="action_launcher"
+        name="Rope" />
+    <item
+        drawable="actiondash"
+        name="Rope" />
+    <item
+        drawable="actions_service"
+        name="Rope" />
+    <item
+        drawable="accubattery"
+        name="Rope" />
+    <item
+        drawable="accuweather"
+        name="Rope" />
+    <item
+        drawable="acorns"
+        name="Rope" />
+    <item
+        drawable="action_launcher"
+        name="Rope" />
+    <item
+        drawable="actiondash"
+        name="Rope" />
+    <item
+        drawable="actions_service"
+        name="Rope" />
+
 
     <category title="All Apps" />
+    <item drawable="_1_app" />
     <item drawable="icon_1" />
     <item drawable="icon_2" />
     <item drawable="icon_3" />
